@@ -35,13 +35,21 @@ export default function QuizPage() {
         try {
             const res = await fetch(`/api/llm?topic=${encodeURIComponent(topic)}`);
             const data = await res.json();
-            setQuestionData(data);
+
+            if (data.error) {
+                setError(data.error); // <- exibe mensagem do servidor
+                setQuestionData(null); // <- evita acessar props indefinidas
+            } else {
+                setQuestionData(data);
+            }
         } catch {
             setError('Failed to load question. Please try again.');
+            setQuestionData(null);
         } finally {
             setLoading(false);
         }
     };
+
 
     useEffect(() => {
         if (topic) fetchQuestion();
@@ -118,15 +126,19 @@ export default function QuizPage() {
                 )}
             </div>
 
-            {questionData && (
-                <ExplanationModal
-                    isOpen={showModal}
-                    onClose={() => setShowModal(false)}
-                    question={questionData.question}
-                    options={questionData.options}
-                    correctAnswer={questionData.options[questionData.correctIndex]}
-                />
-            )}
+            {questionData &&
+                questionData.options &&
+                typeof questionData.correctIndex === 'number' &&
+                questionData.options[questionData.correctIndex] && (
+                    <ExplanationModal
+                        isOpen={showModal}
+                        onClose={() => setShowModal(false)}
+                        question={questionData.question}
+                        options={questionData.options}
+                        correctAnswer={questionData.options[questionData.correctIndex]}
+                    />
+                )}
+
         </main>
     );
 }

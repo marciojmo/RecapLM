@@ -12,6 +12,9 @@ export async function GET(request: Request) {
         return NextResponse.json(question);
     } catch (err) {
         console.error('[LLM] Error generating question:', err);
-        return NextResponse.json({ error: 'Failed to generate question' }, { status: 500 });
+        return NextResponse.json(
+            { error: 'It seems like our AI provider is currently overloaded. Please wait a moment and try again.' },
+            { status: 500 }
+        );
     }
 }

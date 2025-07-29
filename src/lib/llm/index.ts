@@ -28,7 +28,7 @@ export async function explainAnswer(input: {
         case 'gemini':
             return explainAnswerWithGemini(input);
         case 'openai':
-            return explainAnswerWithOpenAI(topic);
+            return explainAnswerWithOpenAI(input);
         case 'mock':
         default:
             return explainAnswerWithMock(input);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Button from '@/components/Button';
 import ExplanationBox from '@/components/ExplanationBox';
@@ -28,7 +28,7 @@ export default function QuizPage() {
     const [isSessionEnded, setIsSessionEnded] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
-    const fetchQuestion = async () => {
+    const fetchQuestion = useCallback(async () => {
         setLoading(true);
         setError('');
         setSelected(null);
@@ -37,8 +37,8 @@ export default function QuizPage() {
             const data = await res.json();
 
             if (data.error) {
-                setError(data.error); // <- exibe mensagem do servidor
-                setQuestionData(null); // <- evita acessar props indefinidas
+                setError(data.error);
+                setQuestionData(null);
             } else {
                 setQuestionData(data);
             }
@@ -48,19 +48,21 @@ export default function QuizPage() {
         } finally {
             setLoading(false);
         }
-    };
-
+    }, [topic, setError, setLoading, setSelected, setQuestionData]);
 
     useEffect(() => {
         if (topic) fetchQuestion();
-    }, [topic]);
+    }, [topic, fetchQuestion]);
 
     const handleAnswer = (i: number) => {
         if (selected === null && questionData) {
             setSelected(i);
-            i === questionData.correctIndex
-                ? setCorrectCount((prev) => prev + 1)
-                : setIncorrectCount((prev) => prev + 1);
+            if (i === questionData.correctIndex) {
+                setCorrectCount((prev) => prev + 1)
+            }
+            else {
+                setIncorrectCount((prev) => prev + 1);
+            }
         }
     };
 

@@ -18,7 +18,6 @@ export async function generateWithMock(topic: string): Promise<QuestionData> {
 
 export async function explainAnswerWithMock({
     question,
-    options,
     correctAnswer,
 }: {
     question: string;

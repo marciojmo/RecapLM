@@ -2,6 +2,7 @@
 
 import './globals.css';
 import { Inter } from 'next/font/google';
+import { Suspense } from 'react'
 import type { Metadata } from 'next';
 
 const inter = Inter({
@@ -19,7 +20,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${inter.variable} bg-[#f3f2f1] text-gray-900`}>
-        {children}
+        <Suspense>
+          {children}
+        </Suspense>
       </body>
     </html>
   );

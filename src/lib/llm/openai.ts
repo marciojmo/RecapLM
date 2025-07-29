@@ -6,8 +6,13 @@ const openai = new OpenAI({
 });
 
 export async function generateWithOpenAI(topic: string): Promise<QuestionData> {
+    const randomId = Math.floor(Math.random() * 100000); // ajuda a induzir variedade
     const prompt = `
 You are an AI that generates multiple choice questions.
+
+Create a new, unique question about "${topic}". Avoid repeating previous content.
+Vary the wording, structure, and focus of the question each time.
+You can change the difficulty level and ask from different angles.
 
 Respond ONLY with a valid JSON object in the following format:
 {
@@ -17,9 +22,9 @@ Respond ONLY with a valid JSON object in the following format:
   "explanation": "string"
 }
 
-Do not include any explanation or formatting outside the JSON.
+Do not include any explanation or formatting. Only return the JSON object.
 
-Topic: "${topic}"
+ID: ${randomId}
 `;
 
     try {

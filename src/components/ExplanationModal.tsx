@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
 import Button from './Button';
 
 interface ExplanationModalProps {
@@ -21,25 +22,17 @@ export default function ExplanationModal({
     const [loading, setLoading] = useState(false);
     const [explanation, setExplanation] = useState('');
 
-    // Cache persistente enquanto o componente estiver montado
     const explanationCache = useRef<Map<string, string>>(new Map());
-
     const cacheKey = JSON.stringify({ question, options, correctAnswer });
 
     useEffect(() => {
         if (!isOpen) return;
 
-        console.log('[Modal] Opened for question:', question);
-        console.log('[Modal] Cache Key:', cacheKey);
-
         const cached = explanationCache.current.get(cacheKey);
         if (cached) {
-            console.log('[Cache] HIT ✅');
             setExplanation(cached);
             return;
         }
-
-        console.log('[Cache] MISS ❌ — fetching explanation from API...');
 
         const fetchExplanation = async () => {
             setLoading(true);
@@ -53,8 +46,7 @@ export default function ExplanationModal({
                 const explanationText = data.explanation || 'No explanation found.';
 
                 setExplanation(explanationText);
-                explanationCache.current.set(cacheKey, explanationText); // Salva no cache
-                console.log('[Cache] SET ✅');
+                explanationCache.current.set(cacheKey, explanationText);
             } catch (err) {
                 console.error('[Fetch Error] Failed to fetch explanation:', err);
                 setExplanation('Failed to fetch detailed explanation.');
@@ -81,7 +73,9 @@ export default function ExplanationModal({
                 {loading ? (
                     <p className="text-sm text-gray-500">Loading explanation...</p>
                 ) : (
-                    <div className="text-sm text-gray-700 whitespace-pre-line">{explanation}</div>
+                    <div className="text-sm text-gray-700 prose max-w-none">
+                        <ReactMarkdown>{explanation}</ReactMarkdown>
+                    </div>
                 )}
                 <Button onClick={onClose} label="Got it!" variant="primary" className="mt-6" />
             </div>
